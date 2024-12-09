@@ -30,13 +30,16 @@
 - `sbank.use` - Allows the player to use the sBank GUI.
 - `sbank.loan` - Allows the player to take out loans.
 - `sbank.interest` - Allows the player to earn interest on their bank balance.
+- `sbank.interest.<percentage>` - Allow players or roles to have custom interest rates.
 - `sbank.dontlosemoney` - Prevents the player from losing money upon death.
 - `sbank.admin` - Allows the player to use the reload command.
+- `sbank.bypass.banker` - Allows players to use the `/bank` command when a banker npc is enabled.
 ---
 
 ## **Dependencies**
 
-- **Vault** (must have)
+- **Vault** (Required)
+- **Citizens** (Optional)
 ---
 
 ## **Support**

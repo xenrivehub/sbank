@@ -59,7 +59,7 @@ public final class SBank extends JavaPlugin {
         // can throw SQLException
         db.loadDebtsFromDatabase();
         db.loadOnlinePlayersBanks();
-        saveEvery15Min();
+        autoSaveDatabase();
 
         if (getConfig().getBoolean("interest.enabled")){
             startInterestScheduler();
@@ -122,15 +122,20 @@ public final class SBank extends JavaPlugin {
         return econ != null;
     }
 
-    public void saveEvery15Min(){
+    public void autoSaveDatabase() {
         new BukkitRunnable() {
             @Override
             public void run() {
                 saveAllBanks();
                 saveAllDebts();
-                getLogger().info("All banks and debts saved to the database.");
+
+
+                if(getConfig().getBoolean("auto-save.log-settings.enabled", true)) {
+                    String msg = getConfig().getString("auto-save.log-settings.message", "All banks and debts saved to the database.").replace("&", "§");
+                    Bukkit.getConsoleSender().sendMessage(msg);
+                }
             }
-        }.runTaskTimer(this, 0L, 18000L);
+        }.runTaskTimer(this, 0L, getConfig().getInt("auto-save.save-interval", 15) * 1200L);
     }
 
     public void startDebtCheckScheduler() {
@@ -176,8 +181,7 @@ public final class SBank extends JavaPlugin {
     }
 
     public void startInterestScheduler() {
-        double interest = plugin.getConfig().getDouble("interest.default-interest-rate", 
-                                                      plugin.getConfig().getDouble("interest.interest-rate"));
+        double interest = plugin.getConfig().getDouble("interest.default-interest-rate", plugin.getConfig().getDouble("interest.interest-rate"));
 
         new BukkitRunnable() {
             @Override
@@ -205,12 +209,18 @@ public final class SBank extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerLoanChatListener(), this);
         getServer().getPluginManager().registerEvents(new LoanGuiListener(), this);
         getServer().getPluginManager().registerEvents(new DebtGuiListener(), this);
-        getServer().getPluginManager().registerEvents(new NPCClickEvent(), this);
+        
+
+
+        if(getServer().getPluginManager().isPluginEnabled("Citizens")) {
+            getLogger().info("Citizens found, initializing NPC support...");
+            getServer().getPluginManager().registerEvents(new NPCClickEvent(), this);
+        }
     }
 
     public void saveAllBanks(){
         if (!banks.isEmpty()){
-            for (Bank bank : banks.values()){
+            for (Bank bank : banks.values()) {
                 try {
                     db.updateBankInDatabase(bank);
                 } catch (SQLException e) {
@@ -222,7 +232,7 @@ public final class SBank extends JavaPlugin {
 
     public void saveAllDebts(){
         if (!debts.isEmpty()){
-            for (Debt debt : debts.values()){
+            for (Debt debt : debts.values()) {
                 try {
                     db.updateDebtInDatabase(debt);
                 } catch (SQLException e) {

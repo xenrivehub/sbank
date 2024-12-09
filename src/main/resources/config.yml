@@ -10,6 +10,13 @@ database:
   username: database_username
   password: database_password
 
+# Settings related to auto-save functionality
+auto-save: 
+  save-interval: 15 # The delay (in minutes) between each auto-save operation (Needs restart)
+  log-settings:
+    enabled: true # Enable or disable logging for auto-save operations (true / false)
+    message: "All banks and debts saved to the database." # Message to log upon successful save
+
 # Default bank name, when player first join to server they will have a bank account with this name
 default-bank-name: "My Bank"
 # Maximum bank name length

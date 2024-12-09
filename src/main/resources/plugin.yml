@@ -2,8 +2,8 @@ name: sBank
 version: '1.2.1'
 main: com.spearforge.sBank.SBank
 api-version: 1.13
-depend:
-  - Vault
+depend: [Vault]
+softdepend: [Citizens]
 commands:
   sbank:
     description: Main command for the bank plugin.
